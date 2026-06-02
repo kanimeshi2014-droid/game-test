@@ -24,7 +24,34 @@
             style: 'mapbox://styles/mapbox/streets-v12', // 👈 ここを light-v11 に書き換えます
             center: [139.7671, 35.6812], 
             zoom: 14
-        });// 👇 地図の文字を日本語にする魔法の呪文
+        });
+        // 👇 地図が読み込まれたら、3D建物のレイヤーを追加する魔法の呪文
+map.on('style.load', () => {
+    // 3D建物のレイヤーを追加
+    map.addLayer({
+        'id': '3d-buildings',
+        'source': 'composite',
+        'source-layer': 'building',
+        'filter': ['==', 'extrude', 'true'],
+        'type': 'fill-extrusion', // 👈 これが立体化の命令
+        'minzoom': 15, // これよりズームアウトすると2Dに戻る
+        'paint': {
+            'fill-extrusion-color': '#aaa', // 建物の色
+            'fill-extrusion-height': [
+                'interpolate', ['linear'], ['zoom'],
+                15, 0, // ズーム15では高さ0
+                15.05, ['get', 'height'] // それ以上で実際の高さへ
+            ],
+            'fill-extrusion-base': ['get', 'min_height'], // 建物の底の高さ
+            'fill-extrusion-opacity': 0.6 // ちょっと透けさせる
+        }
+    });
+});
+        
+        
+        
+        
+        // 👇 地図の文字を日本語にする魔法の呪文
 map.on('style.load', () => {
     map.getStyle().layers.forEach(layer => {
         if (layer.layout && layer.layout['text-field']) {
