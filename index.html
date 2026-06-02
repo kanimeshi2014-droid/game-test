@@ -1,15 +1,12 @@
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [139.767125, 35.681236], // 東京駅の座標（あとでお好みの場所へ変えられます）
+    center: [139.767125, 35.681236],
     zoom: 16,
     pitch: 60
 });
 
-// 💡 「style.load」ではなく「load」というタイミングで動かすことで、白いバグを完全に防ぎます
 map.on('load', () => {
-    
-    // ① 地形（3Dの地面のボコボコ）を設定する
     map.addSource('mapbox-dem', {
         'type': 'raster-dem',
         'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -18,7 +15,6 @@ map.on('load', () => {
     });
     map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
 
-    // ② 地図の文字を日本語にする処理
     map.getStyle().layers.forEach(layer => {
         if (layer.layout && layer.layout['text-field']) {
             map.setLayoutProperty(layer.id, 'text-field', [
@@ -29,7 +25,6 @@ map.on('load', () => {
         }
     });
 
-    // ③ 建物（ビル）を3Dでニョキニョキ立ち上げる処理
     map.addLayer({
         'id': '3d-buildings',
         'source': 'composite',
@@ -38,7 +33,7 @@ map.on('load', () => {
         'type': 'fill-extrusion',
         'minzoom': 15,
         'paint': {
-            'fill-extrusion-color': '#aaa', // ビルの色
+            'fill-extrusion-color': '#aaa',
             'fill-extrusion-height': [
                 'interpolate', ['linear'], ['zoom'],
                 15, 0,
