@@ -24,7 +24,18 @@
             style: 'mapbox://styles/mapbox/streets-v12', // 👈 ここを light-v11 に書き換えます
             center: [139.7671, 35.6812], 
             zoom: 14
-        });
+        });// 👇 地図の文字を日本語にする魔法の呪文
+map.on('style.load', () => {
+    map.getStyle().layers.forEach(layer => {
+        if (layer.layout && layer.layout['text-field']) {
+            map.setLayoutProperty(layer.id, 'text-field', [
+                'coalesce',
+                ['get', 'name_ja'], // まず日本語の名前を探す
+                ['get', 'name']     // なければデフォルトの名前を使う
+            ]);
+        }
+    });
+});
     </script>
 </body>
 </html>
